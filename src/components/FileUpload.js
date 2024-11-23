@@ -8,6 +8,7 @@ const FileUpload = () => {
 
   // Backend URL
   const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+  // const backendUrl = 'http://localhost:5000';
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
