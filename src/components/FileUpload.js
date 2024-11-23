@@ -6,6 +6,9 @@ const FileUpload = () => {
   const [status, setStatus] = useState('');
   const [metadata, setMetadata] = useState(null);
 
+  // Backend URL
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setStatus('');
@@ -26,7 +29,7 @@ const FileUpload = () => {
     try {
       setStatus('Uploading and converting file...');
       
-      const response = await axios.post('http://localhost:5000/upload', formData, {
+      const response = await axios.post(`${backendUrl}/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
