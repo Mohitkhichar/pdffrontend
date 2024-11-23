@@ -24,6 +24,9 @@ const FileUpload = () => {
     formData.append('file', file);
 
     try {
+      setStatus('Uploading and converting the file, please wait...');
+      
+      // Upload the file and receive the metadata and download URL
       const response = await axios.post('https://wordtopdf-l959.onrender.com/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -31,24 +34,28 @@ const FileUpload = () => {
       const { downloadUrl, metadata } = response.data;
       setMetadata(metadata);
 
-      // Trigger file download
-      const downloadResponse = await axios.get(`https://wordtopdf-l959.onrender.com/${downloadUrl}`, {
-        responseType: 'blob', // To handle binary data
+      // Trigger file download using the provided downloadUrl
+      const downloadResponse = await axios.get(downloadUrl, {
+        responseType: 'blob', // Handle binary file response
       });
 
       // Create a blob and download the file
       const url = window.URL.createObjectURL(new Blob([downloadResponse.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', metadata.originalName.replace('.docx', '.pdf'));
+      link.setAttribute('download', metadata.originalName.replace(/\.(docx|doc)$/i, '.pdf'));
       document.body.appendChild(link);
       link.click();
-      link.parentNode.removeChild(link);
+      document.body.removeChild(link);
 
       setStatus('File uploaded and downloaded successfully!');
     } catch (error) {
       console.error('Error:', error);
-      setStatus('Failed to upload or download file.');
+      const errorMessage =
+        error.response && error.response.data && error.response.data.error
+          ? error.response.data.error
+          : 'Failed to upload or download file. Please try again.';
+      setStatus(errorMessage);
     }
   };
 
